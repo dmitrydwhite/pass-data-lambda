@@ -27,7 +27,6 @@ function normalizePath(pathname) {
 }
 
 /**
- * 
  * @param {http.IncomingMessage} req 
  * @param {http.ServerResponse<http.IncomingMessage & { req: http.IncomingMessage}} res 
  * @param {URL} url
