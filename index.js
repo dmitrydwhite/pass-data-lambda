@@ -3,6 +3,8 @@ const { getPathSegment } = require('./utilities/utils');
 const handleTransitRequests = require('./routes/transits');
 const handleObserveRequests = require('./routes/observe');
 
+require('dotenv').config();
+
 const passServer = http.createServer((req, res) => {
     const url = new URL(`https://${req.headers.host}${req.url || ''}`);
     const path = url.pathname;
@@ -25,6 +27,6 @@ const passServer = http.createServer((req, res) => {
     }
 });
 
-passServer.listen(8080, () => {
+passServer.listen(process.env.PORT  , () => {
     console.log('Pass Data is Listening');
 });
