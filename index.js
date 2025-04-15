@@ -2,6 +2,7 @@ const http = require('http');
 const { getPathSegment } = require('./utilities/utils');
 const handleTransitRequests = require('./routes/transits');
 const handleObserveRequests = require('./routes/observe');
+const handleTleRequests = require('./routes/tle');
 
 require('dotenv').config();
 

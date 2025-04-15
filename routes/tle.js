@@ -1,8 +1,7 @@
 const http = require('http');
 const https = require('https');
 const axios = require('axios');
-const jspredict = require('jspredict');
-const { getPathSegment, validateQth, HOURS_72 } = require('../utilities/utils');
+const { getPathSegment } = require('../utilities/utils');
 const OutputCache = require('../utilities/Cache');
 
 require('dotenv').config();
