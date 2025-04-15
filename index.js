@@ -1,13 +1,30 @@
 const http = require('http');
+const { getPathSegment } = require('./utilities/utils');
+const handleTransitRequests = require('./routes/transits');
+const handleObserveRequests = require('./routes/observe');
 
 const passServer = http.createServer((req, res) => {
     const url = new URL(`https://${req.headers.host}${req.url || ''}`);
     const path = url.pathname;
+    const primary = getPathSegment(path, 0);
 
-    console.log('path', path);
-
-    res.writeHead(200);
-    res.end();
+    switch (primary) {
+        case 'transits':
+            handleTransitRequests(req, res, url);
+            break;
+        case 'observe':
+            handleObserveRequests(req, res, url);
+            break;
+        case 'tle':
+            handleTleRequests(req, res, url);
+            break;
+        default:
+            console.error(`No route found for ${path}`);
+            res.writeHead(404, 'Not Found');
+            res.end();
+    }
 });
 
-passServer.listen(8080);
+passServer.listen(8080, () => {
+    console.log('Pass Data is Listening');
+});
