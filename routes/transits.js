@@ -2,7 +2,7 @@ const http = require('http');
 const https = require('https');
 const axios = require('axios');
 const jspredict = require('jspredict');
-const { getPathSegment, validateQth, HOURS_72 } = require('../utilities/utils');
+const { getPathSegment, validateQth, HOURS_72, normalizeQth } = require('../utilities/utils');
 const OutputCache = require('../utilities/Cache');
 
 require('dotenv').config();
@@ -44,7 +44,7 @@ function handleTransitRequests(req, res, url) {
         return;
     }
 
-    const cached = outputCache.get(cachedPath);
+    const cached = outputCache.check(cachedPath);
 
     if (cached) {
         res.writeHead(200, 'OK');
@@ -63,7 +63,7 @@ function handleTransitRequests(req, res, url) {
 
                 console.error(`No TLE for ${noradId} found on N2YO`);
 
-                outputCache.update(cachePath, output);
+                outputCache.update(cachedPath, output);
                 res.writeHead(404, 'Not Found');
                 res.write(output);
                 res.end();
