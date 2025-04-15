@@ -20,6 +20,10 @@ const passServer = http.createServer((req, res) => {
         case 'tle':
             handleTleRequests(req, res, url);
             break;
+        case 'index':
+            res.writeHead(200);
+            res.write('<p>PASS DATA</p>');
+            break;
         default:
             console.error(`No route found for ${path}`);
             res.writeHead(404, 'Not Found');
