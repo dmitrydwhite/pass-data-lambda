@@ -3,27 +3,10 @@ const https = require('https');
 const axios = require('axios');
 const jspredict = require('jspredict');
 const { getPathSegment, validateQth, HOURS_72, normalizeQth, POINTING_INTERVAL } = require('../utilities/utils');
-const OutputCache = require('../utilities/Cache');
 
 require('dotenv').config();
 
 const httpsAgent = https.Agent({ rejectUnauthorized: false });
-
-const outputCache = new OutputCache();
-
-/**
- * @param {string} pathname 
- */
-function normalizePath(pathname) {
-    let [t, noradId, lat, long, elev, startTime] = pathname.split('/');
-
-    return [
-        t,
-        noradId,
-        normalizeQth([lat, long, elev]),
-        Math.floor(Number(startTime) / 1000).toString(),
-    ].join('/');
-}
 
 /**
  * @param {http.IncomingMessage} req 
@@ -33,7 +16,6 @@ function normalizePath(pathname) {
 function handleTransitDetailsRequests(req, res, url) {
     console.log('Making a transit details request');
     const pathname = url.pathname;
-    const cachedPath = normalizePath(pathname);
     const noradId = getPathSegment(pathname, 1);
     const [lat, long, elev] = [2, 3, 4].map(i => getPathSegment(pathname, i)).map(r => decodeURIComponent(r)).map(n => Number(n));
     const startTime = Math.floor(Number(getPathSegment(pathname, 5)) / 1000);
@@ -46,16 +28,6 @@ function handleTransitDetailsRequests(req, res, url) {
         return;
     }
 
-    const cached = outputCache.check(cachedPath);
-
-    if (cached) {
-        res.writeHead(200, 'OK');
-        res.write(cached);
-        res.end();
-
-        return;
-    }
-
     axios.get(`https://api.n2yo.com/rest/v1/satellite/tle/${noradId}&apiKey=${process.env.N2YO_KEY}`, { httpsAgent })
         .then(({ data }) => {
             let { tle } = data;
@@ -65,7 +37,6 @@ function handleTransitDetailsRequests(req, res, url) {
 
                 console.error(`No TLE for ${noradId} found on N2YO`);
 
-                outputCache.update(cachedPath, output);
                 res.writeHead(404, 'Not Found');
                 res.write(output);
                 res.end();
@@ -86,7 +57,6 @@ function handleTransitDetailsRequests(req, res, url) {
             
             const output = JSON.stringify({ count: transitDetails.length, transitDetails, qth: [lat, long, elev], noradId });
             
-            outputCache.update(cachedPath, output);
             res.writeHead(200);
             res.write(output);
             res.end();
