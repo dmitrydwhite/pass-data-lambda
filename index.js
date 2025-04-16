@@ -3,6 +3,7 @@ const { getPathSegment } = require('./utilities/utils');
 const handleTransitRequests = require('./routes/transits');
 const handleObserveRequests = require('./routes/observe');
 const handleTleRequests = require('./routes/tle');
+const handleTransitDetailsRequests = require('./routes/transit-details');
 
 require('dotenv').config();
 
@@ -20,6 +21,9 @@ const passServer = http.createServer((req, res) => {
             break;
         case 'tle':
             handleTleRequests(req, res, url);
+            break;
+        case 'transit-details':
+            handleTransitDetailsRequests(req, res, url);
             break;
         case 'index':
             res.writeHead(200);
