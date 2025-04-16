@@ -2,7 +2,7 @@ const http = require('http');
 const https = require('https');
 const axios = require('axios');
 const jspredict = require('jspredict');
-const { getPathSegment, validateQth, HOURS_72, normalizeQth } = require('../utilities/utils');
+const { getPathSegment, validateQth, HOURS_72, normalizeQth, POINTING_INTERVAL } = require('../utilities/utils');
 const OutputCache = require('../utilities/Cache');
 
 require('dotenv').config();
@@ -77,9 +77,9 @@ function handleTransitDetailsRequests(req, res, url) {
             }
 
             const transitDetails = jspredict
-                .transits(tle, [lat, long, elev], startTime, startTime + HOURS_72, null, 10)
+                .transits(tle, [lat, long, elev], startTime * 1000, (startTime * 1000) + HOURS_72, undefined, 10)
                 .map(t => {
-                    const pointings = jspredict.observes(tle, [lat, long, elev], t.start, t.end);
+                    const pointings = jspredict.observes(tle, [lat, long, elev], t.start, t.end, POINTING_INTERVAL);
 
                     return { ...t, pointings };
                 });

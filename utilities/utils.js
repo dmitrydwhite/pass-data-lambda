@@ -36,6 +36,7 @@ function normalizeQth([lat, long, elev]) {
 const ONE_HOUR = 1000 * 60 * 60;
 const HOURS_72 = ONE_HOUR * 72;
 const THREE_MINUTES = 1000 * 60 * 3;
+const POINTING_INTERVAL = 4000;
 
 module.exports = {
     getPathSegment,
@@ -45,4 +46,5 @@ module.exports = {
     HOURS_72,
     ONE_HOUR,
     THREE_MINUTES,
+    POINTING_INTERVAL,
 };
